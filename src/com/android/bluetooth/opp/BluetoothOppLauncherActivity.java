@@ -117,7 +117,12 @@ public class BluetoothOppLauncherActivity extends Activity {
                     // session to DB.
                     Thread t = new Thread(new Runnable() {
                         public void run() {
-                            sendFileInfo(type, stream.toString(), false);
+                            BluetoothOppManager.getInstance(BluetoothOppLauncherActivity.this)
+                                .saveSendingFileInfo(type,stream.toString(),
+                                    false /* isHandover */, true /* fromExternal */);
+                            //Done getting file info..Launch device picker and finish this activity
+                            launchDevicePicker();
+                            finish();
                         }
                     });
                     t.start();
@@ -129,7 +134,13 @@ public class BluetoothOppLauncherActivity extends Activity {
                     if (fileUri != null) {
                         Thread t = new Thread(new Runnable() {
                             public void run() {
-                                sendFileInfo(type, fileUri.toString(), false);
+                                BluetoothOppManager.getInstance(BluetoothOppLauncherActivity.this)
+                                    .saveSendingFileInfo(type,fileUri.toString(),
+                                        false /* isHandover */, false /* fromExternal */);
+                                //Done getting file info..Launch device picker
+                                //and finish this activity
+                                launchDevicePicker();
+                                finish();
                             }
                         });
                         t.start();
@@ -152,17 +163,13 @@ public class BluetoothOppLauncherActivity extends Activity {
                                 + mimeType);
                     Thread t = new Thread(new Runnable() {
                         public void run() {
-                            try {
-                                BluetoothOppManager.getInstance(BluetoothOppLauncherActivity.this)
-                                    .saveSendingFileInfo(mimeType,uris, false);
-                                //Done getting file info..Launch device picker
-                                //and finish this activity
-                                launchDevicePicker();
-                                finish();
-                            } catch (IllegalArgumentException exception) {
-                                showToast(exception.getMessage());
-                                finish();
-                            }
+                            BluetoothOppManager.getInstance(BluetoothOppLauncherActivity.this)
+                                .saveSendingFileInfo(mimeType,uris,
+                                    false /* isHandover */, true /* fromExternal */);
+                            //Done getting file info..Launch device picker
+                            //and finish this activity
+                            launchDevicePicker();
+                            finish();
                         }
                     });
                     t.start();
@@ -429,4 +436,3 @@ public class BluetoothOppLauncherActivity extends Activity {
     }
 
 }
-

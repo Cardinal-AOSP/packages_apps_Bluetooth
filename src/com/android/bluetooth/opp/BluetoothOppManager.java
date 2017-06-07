@@ -250,7 +250,7 @@ public class BluetoothOppManager {
         if (V) Log.v(TAG, "Application data stored to SharedPreference! ");
     }
 
-    public void saveSendingFileInfo(String mimeType, String uriString, boolean isHandover)
+    public void saveSendingFileInfo(String mimeType, String uriString, boolean isHandover, boolean fromExternal)
             throws IllegalArgumentException {
         synchronized (BluetoothOppManager.this) {
             mMultipleFlag = false;
@@ -260,13 +260,15 @@ public class BluetoothOppManager {
             BluetoothOppSendFileInfo sendFileInfo =
                 BluetoothOppSendFileInfo.generateFileInfo(mContext, uri, mimeType);
             uri = BluetoothOppUtility.generateUri(uri, sendFileInfo);
-            BluetoothOppUtility.putSendFileInfo(uri, sendFileInfo);
+            BluetoothOppUtility.putSendFileInfo(
+                    uri, BluetoothOppSendFileInfo.generateFileInfo(
+                                 mContext, uri, sendFileInfo, mimeType, fromExternal));
             mUriOfSendingFile = uri.toString();
             storeApplicationData();
         }
     }
 
-    public void saveSendingFileInfo(String mimeType, ArrayList<Uri> uris, boolean isHandover)
+    public void saveSendingFileInfo(String mimeType, ArrayList<Uri> uris, boolean isHandover, boolean fromExternal)
             throws IllegalArgumentException {
         synchronized (BluetoothOppManager.this) {
             mMultipleFlag = true;
@@ -278,7 +280,9 @@ public class BluetoothOppManager {
                     BluetoothOppSendFileInfo.generateFileInfo(mContext, uri, mimeType);
                 uri = BluetoothOppUtility.generateUri(uri, sendFileInfo);
                 mUrisOfSendingFiles.add(uri);
-                BluetoothOppUtility.putSendFileInfo(uri, sendFileInfo);
+                BluetoothOppUtility.putSendFileInfo(
+                        uri, BluetoothOppSendFileInfo.generateFileInfo(
+                                     mContext, uri, sendFileInfo, mimeType, fromExternal));
             }
             storeApplicationData();
         }
